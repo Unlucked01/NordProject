@@ -117,8 +117,7 @@ def print_table(data):
     separator = "-" * len(header)
     print("Kunskapsutveckling i matematik enligt PISA-undersökningen 2003 – 2018.")
     print(separator)
-    # print(header)
-    # print(separator)
+    print("{:>35}".format("Länder:"))
 
     for row in data:
         print("{:<5} {:<10} {:<10} {:<10} {:<10} {:<10} {:<7}".format(*row))
@@ -129,9 +128,9 @@ def nordic_table(pisadata, yearly_average, nordic_countries):
     header = ["År"]
     header.extend(nordic_countries)
     header.append("Medelvärde")
-
     table_data = [header]
-    scandinavian_column_index = pisadata[1].index('medel')
+
+    mean_indices = [i for i, column in enumerate(pisadata[1]) if 'medel' in column]
 
     # Для каждого года
     for i in range(len(yearly_average)):
@@ -140,48 +139,55 @@ def nordic_table(pisadata, yearly_average, nordic_countries):
         row_data = [year]
 
         for country in nordic_countries:
-            index = [i for i, row in enumerate(pisadata) if row[0] == country]
-            index = index[0]
-            scandinavian_average = pisadata[index][scandinavian_column_index]
+            index = [i for i, row in enumerate(pisadata) if row[0] == country][0]
+            scandinavian_average = pisadata[index][mean_indices[i]]
             row_data.append(scandinavian_average)
 
         row_data.append(yearly_average[i][1])
         table_data.append(row_data)
-
     print_table(table_data)
 
 
 def nordic_graph(pisadata, yearly_average, nordic_countries):
-    # Создаем список годов
-    years = []
-    for i in range(len(yearly_average)):
-        years.append(yearly_average[i][0])
+    # Создаем список годов в обратном порядке
+    years = [year for year, _ in reversed(yearly_average)]
+    mean_indices = [i for i in reversed(range(len(pisadata[1]))) if 'Medelvärde' in pisadata[0][i]]
+
     # Создаем заголовок для графика
     plt.title("PISA-undersökning 2003 – 2018")
+    plt.ylim(350, 550)
+    plt.xlim(2003, 2018)
 
-    scandinavian_column_index = pisadata[1].index('medel')
-    # Для каждой страны Северной Европы строим кривую на графике
-    for country in nordic_countries:
-        try:
-            index = [i for i, row in enumerate(pisadata) if row[0] == country]
-            index = index[0]
-            scandinavian_average = pisadata[index][scandinavian_column_index]
-            plt.plot(scandinavian_average, label=country)
-        except ValueError:
-            print(f"Данные для страны {country} отсутствуют")
-        except IndexError:
-            print(f"Данные для страны {country} отсутствуют")
-    plt.ylim(years.sort())
-    # Создаем кривую для средних значений по годам исследования
-    plt.plot(yearly_average[0], yearly_average[1], label="Medelvärde", linestyle='--')
     # Добавляем подписи осей
     plt.xlabel("År")
     plt.ylabel("Kunskapsutveckling")
+
+    # Словарь для хранения данных для каждой страны
+    country_data = {country: [] for country in nordic_countries}
+
+    # Извлекаем данные для каждой страны
+    for country in nordic_countries:
+        index = [i for i, row in enumerate(pisadata) if row[0] == country][0]
+        country_mean_indices = [i for i in mean_indices if i < len(pisadata[index])]
+        country_data[country] = [float(row[mean_index]) for row, mean_index in
+                                 zip(pisadata[index + 1:], country_mean_indices)]
+
+    print(country_data)
+    exit(0)
+    # Добавляем кривые для каждой страны, если есть данные
+    for country, data in country_data.items():
+        if data:
+            plt.plot(years, data, label=country)
+
+    # Добавляем кривую для годового среднего значения
+    average_values = [avg for _, avg in reversed(yearly_average)]
+    plt.plot(years, average_values, label="Medelvärde", linestyle='--', color='black')
+
     # Добавляем легенду
     plt.legend()
+
     # Отображаем график
     plt.show()
-
 
 #     №4
 def improve_trend(data):
@@ -224,8 +230,8 @@ def improve_trend(data):
 
     return table_data
 
-# Пример вызова функции
 
+# Пример вызова функции
 
 
 # Huvudprogram med Meny
@@ -245,13 +251,10 @@ nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 # Main program loop
 while True:
     pisadata = read_file("f_56965d49c2646eaf.csv")
-    # improving_countries_table = improve_trend(pisadata)
-    #
-    # # Выводим таблицу
-    # for row in improving_countries_table:
-    #     print("{:<10} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format(*row))
+    mean = armed(pisadata)
 
-
+    # nordic_table(pisadata, mean, nordic_countries)
+    nordic_graph(pisadata, mean, nordic_countries)
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
