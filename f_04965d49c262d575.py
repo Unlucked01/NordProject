@@ -189,50 +189,37 @@ def nordic_graph(pisadata, yearly_average, nordic_countries):
     # Отображаем график
     plt.show()
 
+
 #     №4
-def improve_trend(data):
-    # Находим индексы столбцов с меткой "среднее" для каждого года с 2003 по 2018
-    mean_indices = [i for i, column in enumerate(data[1]) if 'medel' in column]
-    # Создаем заголовок таблицы
-    header = ["Land"]
-    header.extend([data[0][index] for index in mean_indices])
+
+
+def battreSamre(pisadata, improving):
+    if improving:
+        print("Таблица стран с улучшающимися результатами:")
+    else:
+        print("Таблица стран с ухудшающимися результатами:")
+
+    header = ["Länder"]
+    years = ["2018", "2015", "2012", "2009", "2006", "2003"]
+    header.extend(years)
+
     table_data = [header]
-    # Для каждой страны
-    for i in range(1, 40):
-        country = data[i][0]
-        print(country)
 
-        # Проверяем, улучшились ли показатели страны с каждым годом
-        improving = True
-        for index in mean_indices:
-            try:
-                print(data[index][i])
-                exit(0)
-                current_value = int(data[1][i][index])
-                previous_value = int(data[1][i][index - 1])
-                if current_value < previous_value:
-                    improving = False
-                    break
-            except (IndexError, ValueError):
-                improving = False
-                break
+    for row in pisadata[1:]:
+        country = row[0]
+        scores = row[1:-1]  # Исключаем последний элемент, так как это среднее значение
+        print(row[1:-2])
+        try:
+            improving_or_decreasing = all(
+                int(scores[i]) < int(scores[i + 1]) for i in range(len(scores) - 1)) if improving else all(
+                int(scores[i]) > int(scores[i + 1]) for i in range(len(scores) - 1))
+        except:
+            pass
+        if improving_or_decreasing:
+            table_data.append([country] + scores)
 
-        # Если показатели улучшаются, добавляем страну в таблицу
-        if improving:
-            for index in mean_indices:
-                try:
-                    value = int(data[1][i][index])
-                    row_data.append(value)
-                except (IndexError, ValueError):
-                    row_data.append("N/A")
-
-            table_data.append(row_data)
-
-    return table_data
-
-
-# Пример вызова функции
-
+    for row in table_data:
+        print("\t".join(row))
 
 # Huvudprogram med Meny
 menu = """
@@ -254,7 +241,8 @@ while True:
     mean = armed(pisadata)
 
     # nordic_table(pisadata, mean, nordic_countries)
-    nordic_graph(pisadata, mean, nordic_countries)
+    # nordic_graph(pisadata, mean, nordic_countries)
+    battreSamre(pisadata, True)
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
