@@ -40,37 +40,38 @@ def sort_results_by_column(data, column_index):
     sorted_data = sorted(data[2:], key=lambda x: x[column_index], reverse=True)
 
     # Skriv ut de tio bästa resultaten
-    print("De tio länder som hade bäst resultat år 2018")
-    print("--------------------------------------------")
+    header = "De tio länder som hade bäst resultat år 2018"
+    delim = "-"*len(header)
+    print(header)
+    print(delim)
     print("Land      Resultat")
-    print("--------------------------------------------")
+    print(delim)
     for row in sorted_data[:10]:
         print(f"{row[0]:<10} {row[column_index]}")
 
     print()
 
     # Skriv ut de tio sämsta resultaten
-    print("De tio länder som hade sämst resultat år 2018")
-    print("--------------------------------------------")
+    header = "De tio länder som hade sämst resultat år 2018"
+    delim = "-"*header
+    print(header)
+    print(delim)
     print("Land      Resultat")
-    print("--------------------------------------------")
+    print(delim)
     for row in sorted_data[-10:]:
         print(f"{row[0]:<10} {row[column_index]}")
 
 
-"Task 3"
-
-
 def column_mean(data, column_index):
     """
-    Функция вычисляет среднее значение столбца в списке.
+    Funktionen beräknar medelvärdet för en kolumn i en lista.
 
-    Args:
-    data (list): Список данных.
-    column_index (int): Индекс столбца для вычисления среднего значения.
+     Args:
+     data (lista): Lista över data.
+     column_index (int): Index för kolumnen för att beräkna medelvärdet.
 
-    Returns:
-    float: Среднее значение столбца.
+     Returnerar:
+     float: Medelvärdet för kolumnen.
     """
     total = 0
     count = 0
@@ -91,20 +92,20 @@ def column_mean(data, column_index):
 
 def armed(data):
     """
-    Функция создает список armed со средним значением/годом исследования для всех стран.
+    Funktionen skapar en lista över beväpnade med medelvärde/studieår för alla länder.
 
     Args:
-    data (list): Исходный список данных.
+    data (lista): Initial lista med data.
 
-    Returns:
-    list: Список armed со средним значением/годом исследования.
+    Returnerar:
+    lista: Beväpnad lista med medelvärde/studieår.
     """
     armed = []
 
-    # Получить индексы столбцов с меткой "Среднее" для каждого года
+    # Få index över kolumner märkta "Genomsnitt" för varje år
     mean_indices = [i for i, column in enumerate(data[1]) if 'medel' in column]
 
-    # Для каждого года вычислить среднее значение столбца и добавить его в список armed
+    # Beräkna medelvärdet av kolumnen för varje år och lägg till det i den beväpnade listan
     for index in mean_indices:
         mean_value = column_mean(data, index)
         year = data[0][index].split(' ')[-1]  # Извлечь год из метки столбца
@@ -113,53 +114,40 @@ def armed(data):
 
 
 def print_table(data):
+    """
+    Funktionen skriver ut en tabell med data.
+
+    Args:
+    data (lista): Initial lista med data.
+
+    Returnerar:
+    Ingen
+    """
     header = ("{:<5} {:<10} {:<10} {:<10} {:<10} {:<10} {:<7}"
               .format("År", "Sweden", "Norway", "Denmark", "Finland", "Iceland", "Medelvärde"))
     separator = "-" * len(header)
     print("Kunskapsutveckling i matematik enligt PISA-undersökningen 2003 – 2018.")
     print(separator)
     print("{:>35}".format("Länder:"))
-
+    print("-"*68)
 
     for row in data:
         print("{:<5} {:<10} {:<10} {:<10} {:<10} {:<10} {:<7}".format(*row))
 
 
-    headers_data = data[0]
-    print(headers_data)
-    headers = {}
-    for k in headers_data:
-        headers[k] = []
-    for row in data[::-1]:
-        for index, col in enumerate(row):
-            arr_to_add = []
-            if str(col).isdigit():
-                arr_to_add.append(int(col))
-                headers[headers_data[index]].append(int(col))
-    # Переводим годы в числа для корректного отображения на графике
-
-    print(headers)
-
-    # Создание графика
-    plt.figure(figsize=(10, 6))
-
-    # Для каждой страны и среднего значения
-    for country in headers.keys():
-        if country != 'År':
-            plt.plot(headers['År'], headers[country], marker='o', label=country)
-
-    # Настройка графика
-    plt.title('Score Trends Over Years by Country')
-    plt.xlabel('Year')
-    plt.ylabel('Score')
-    plt.legend()
-    plt.grid(True)
-    plt.gca()  # Инвертирование оси X для корректного отображения годов
-    plt.show()
-
-
 def nordic_table(pisadata, yearly_average, nordic_countries):
-    # Создаем заголовок таблицы
+    """
+    Funktionen skapar en tabell och graf som visar medelvärden för de skandinaviska länderna.
+
+    Args:
+    pisadata (lista): PISA-data.
+    yearly_average (lista): Årsmedelvärden.
+    nordiska_länder (lista): Lista över skandinaviska länder.
+
+    Returnerar:
+    Ingen
+    """
+    # Skapa en tabellrubrik
     header = ["År"]
     header.extend(nordic_countries)
     header.append("Medelvärde")
@@ -167,10 +155,10 @@ def nordic_table(pisadata, yearly_average, nordic_countries):
 
     mean_indices = [i for i, column in enumerate(pisadata[1]) if 'medel' in column]
 
-    # Для каждого года
+    # För varje år
     for i in range(len(yearly_average)):
-        year = yearly_average[i][0]  # Извлекаем год из заголовка
-        # Собираем данные для текущего года
+        year = yearly_average[i][0]  # Extraherar årtalet från titeln
+        # Insamling av data för innevarande år
         row_data = [year]
 
         for country in nordic_countries:
@@ -184,21 +172,29 @@ def nordic_table(pisadata, yearly_average, nordic_countries):
     nordic_graph(table_data)
 
 
-
 def nordic_graph(data):
-    # Создание DataFrame из данных
+    """
+    Функция создает график тенденций оценок по годам для разных стран.
+
+    Args:
+    data (list): Данные для построения графика в формате списка списков.
+
+    Возвращает:
+    None
+    """
+    # Skapa en DataFrame från Data
     df = pd.DataFrame(data[1:], columns=data[0])
 
-    # Убедимся, что все данные, кроме 'År', числовые
+    # Låt oss se till att all data utom 'År' är numerisk
     df[df.columns[1:]] = df[df.columns[1:]].apply(pd.to_numeric)
 
-    # Создание графика
+    # Skapa en graf
     plt.figure(figsize=(10, 6))
     for country in df.columns:
         if country != 'År':
             plt.plot(df['År'], df[country], marker='o', label=country)
 
-    # Настройка графика
+    # Att lägga upp ett schema
     plt.title('Score Trends Over Years by Country')
     plt.xlabel('Year')
     plt.ylabel('Score')
@@ -206,13 +202,26 @@ def nordic_graph(data):
     plt.grid(True)
     plt.show()
 
-#     №4
-
 
 def battreSamre(pisadata, improving):
-    print("Table of countries with" + (" improving " if improving else " worsening ") + "results:")
+    """
+    Funktionen skapar en graf över betygstrender per år för olika länder.
 
-    header = ["Countries"] + [year for year in [2003, 2006, 2009, 2012, 2015, 2018]]
+    Args:
+    data (lista): Data som ska plottas i listformat.
+
+    Returnerar:
+    Ingen
+    """
+    header = "Länder som hela tiden har förbättrat sina resultat mellan 2003 – 2018"
+    delim = "-"*len(header)
+    print(header)
+    print(delim)
+    print("{:>42}".format("År och resultat:"))
+    print("{:<20} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format("Land", "2018", "2015", "2012", "2009", "2006", "2003"))
+    print(delim)
+
+    header = ["Land"] + [year for year in [2003, 2006, 2009, 2012, 2015, 2018]]
     table_data = [header]
     for row in pisadata[2::]:
         last_six_values = row[-6:]
@@ -220,19 +229,29 @@ def battreSamre(pisadata, improving):
 
         scores = [int(score) for score in last_six_values if score.isdigit()]  # Convert scores to integers, ignoring non-digit values
         scores = scores[::-1]
-        print(scores)
 
         if improving and all(scores[i] <= scores[i + 1] for i in range(len(scores) - 1)):
             table_data.append([country] + scores)
         elif not improving and all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)):
             table_data.append([country] + scores)
 
-
-    for row in table_data:
-        print("\t".join(map(str, row)))
+    for row in table_data[1:]:
+        country = row[0]
+        scores = row[1:]
+        print("{:<20} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format(country, *scores))
 
 
 def Woman_man(data):
+    """
+    Funktionen analyserar data som jämför resultaten för män och kvinnor över olika år och länder,
+     och visar en tabell med data där kvinnor presterade bättre än män.
+
+    Args:
+    data (lista): Data som ska analyseras i listformat.
+
+    Returnerar:
+    Ingen
+    """
     # Skapa en lista för att lagra resultat där kvinnor presterade bättre än män
     women_better = []
 
@@ -245,13 +264,31 @@ def Woman_man(data):
                 score_m = int(row[i])
                 score_f = int(row[i+1])
                 if score_f > score_m:
-                    women_better.append((country, year, score_m, score_f))
+                    women_better.append((year, country, score_f, score_m))
+
+    # Сначала создадим словарь для хранения данных по годам
+    yearly_data = {}
+
+    # Заполним словарь данными из списка
+    for year, country, score_f, score_m in women_better:
+        if year not in yearly_data:
+            yearly_data[year] = []
+        yearly_data[year].append((country, score_f, score_m))
 
     # Skriv ut tabellen
-    print("Länder och år där kvinnor presterade bättre än män:")
-    print("Land\t\tÅr\tMän\tKvinnor")
-    for item in women_better:
-        print(f"{item[0]:<15}{item[1]:<5}{item[2]:<5}{item[3]:<5}")
+    separator = "-" * 50
+    print("    År och länder när kvinnorna presterar bättre än männen")
+    print("{:>40}".format("under åren 2003–2018."))
+    print("{:<12} {:<15} {:<8} {:<5}".format("År", "Land", "Kvinnor", "Män"))
+    print(separator)
+
+    for k in yearly_data.keys():
+        for i, (country, score_f, score_m) in enumerate(yearly_data[k]):
+            if i == 0:
+                print(f"{k:<5}\t{country:<20} {score_f:<7} {score_m:<7}")
+            else:
+                print(f"\t\t{country:<20} {score_f:<7} {score_m:<7}")
+
 
 # Huvudprogram med Meny
 menu = """
@@ -269,33 +306,28 @@ nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 
 # Main program loop
 while True:
-    pisadata = read_file("f_56965d49c2646eaf.csv")
-    mean = armed(pisadata)
-
-    # nordic_table(pisadata, mean, nordic_countries)
-    # nordic_graph(pisadata, mean, nordic_countries)
+    pisadata = read_file("pisadata.csv")
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
-        pass
-        # filename = input("Ange filnamn eller tryck bara Enter för data.csv: ") or 'data.csv'
-        # pisadata = read_file(filename)
-        # print("Fem första raderna i pisadata:")
-        # for row in pisadata[:5]:
-        #     print(row)
+        filename = input("Ange filnamn eller tryck bara Enter för data.csv: ") or 'pisadata.csv'
+        pisadata = read_file(filename)
+        print("Fem första raderna i pisadata:")
+        for row in pisadata[:5]:
+            print(row)
     elif choice == '2':
         sort_results_by_column(pisadata, 12)
     elif choice == '3':
         mean = armed(pisadata)
         nordic_table(pisadata, mean, nordic_countries)
-        pass
     elif choice == '4':
-        print("Analyzing data for continuous improvement over the years...")
         battreSamre(pisadata, True)
-        print("\nAnalyzing data for continuous decline over the years...")
+        print()
         battreSamre(pisadata, False)
+        print()
     elif choice == '5':
         Woman_man(pisadata)
+        print()
     elif choice == '6':
         print("Programmet är avslutat.")
         break
