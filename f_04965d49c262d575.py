@@ -44,22 +44,22 @@ def sort_results_by_column(data, column_index):
     delim = "-"*len(header)
     print(header)
     print(delim)
-    print("Land      Resultat")
+    print("Land            Resultat")
     print(delim)
     for row in sorted_data[:10]:
-        print(f"{row[0]:<10} {row[column_index]}")
+        print(f"{row[0]:<15} {row[column_index]}")
 
     print()
 
     # Skriv ut de tio sämsta resultaten
     header = "De tio länder som hade sämst resultat år 2018"
-    delim = "-"*header
+    delim = "-"*len(header)
     print(header)
     print(delim)
-    print("Land      Resultat")
+    print("Land            Resultat")
     print(delim)
     for row in sorted_data[-10:]:
-        print(f"{row[0]:<10} {row[column_index]}")
+        print(f"{row[0]:<15} {row[column_index]}")
 
 
 def column_mean(data, column_index):
@@ -306,7 +306,7 @@ nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 
 # Main program loop
 while True:
-    pisadata = read_file("pisadata.csv")
+    # pisadata = read_file("pisadata.csv")
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
@@ -316,18 +316,30 @@ while True:
         for row in pisadata[:5]:
             print(row)
     elif choice == '2':
-        sort_results_by_column(pisadata, 12)
+        if 'pisadata' not in locals():
+            print("Du måste välja alternativ 1 först.")
+        else:
+            sort_results_by_column(pisadata, 12)
     elif choice == '3':
-        mean = armed(pisadata)
-        nordic_table(pisadata, mean, nordic_countries)
+        if 'pisadata' not in locals():
+            print("Du måste välja alternativ 1 först.")
+        else:
+            mean = armed(pisadata)
+            nordic_table(pisadata, mean, nordic_countries)
     elif choice == '4':
-        battreSamre(pisadata, True)
-        print()
-        battreSamre(pisadata, False)
-        print()
+        if 'pisadata' not in locals():
+            print("Du måste välja alternativ 1 först.")
+        else:
+            battreSamre(pisadata, True)
+            print()
+            battreSamre(pisadata, False)
+            print()
     elif choice == '5':
-        Woman_man(pisadata)
-        print()
+        if 'pisadata' not in locals():
+            print("Du måste välja alternativ 1 först.")
+        else:
+            Woman_man(pisadata)
+            print()
     elif choice == '6':
         print("Programmet är avslutat.")
         break
