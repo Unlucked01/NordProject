@@ -287,7 +287,7 @@ def Woman_man(data):
             if i == 0:
                 print(f"{k:<5}\t{country:<20} {score_f:<7} {score_m:<7}")
             else:
-                print(f"\t\t{country:<20} {score_f:<7} {score_m:<7}")
+                print(f"\t{country:<20} {score_f:<7} {score_m:<7}")
 
 
 # Huvudprogram med Meny
