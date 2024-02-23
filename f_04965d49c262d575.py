@@ -1,7 +1,5 @@
 import csv
 import matplotlib.pyplot as plt
-import pandas as pd
-
 
 # Uppgift 1: Funktionen för att läsa in csv-filen och skapa en lista
 def read_file(filename):
@@ -174,30 +172,37 @@ def nordic_table(pisadata, yearly_average, nordic_countries):
 
 def nordic_graph(data):
     """
-    Функция создает график тенденций оценок по годам для разных стран.
+    Funktionen skapar ett diagram över poängutvecklingen per år för olika länder.
 
     Args:
-    data (list): Данные для построения графика в формате списка списков.
+    data (lista): De data som ska plottas i listlistformat.
 
-    Возвращает:
-    None
+    Returnerar:
+    Ingen
     """
-    # Skapa en DataFrame från Data
-    df = pd.DataFrame(data[1:], columns=data[0])
+    data.reverse()
 
-    # Låt oss se till att all data utom 'År' är numerisk
-    df[df.columns[1:]] = df[df.columns[1:]].apply(pd.to_numeric)
+    header = data[6]
+    rows = data[:6]
 
-    # Skapa en graf
+    data_dict = {header[i]: [] for i in range(len(header))}
+
+    for row in rows:
+        for i in range(len(header)):
+            data_dict[header[i]].append(row[i])
+
+    for key, values in data_dict.items():
+        if key != 'År':
+            data_dict[key] = [int(value) for value in values]
+
     plt.figure(figsize=(10, 6))
-    for country in df.columns:
+    for country in header:
         if country != 'År':
-            plt.plot(df['År'], df[country], marker='o', label=country)
+            plt.plot(data_dict['År'], data_dict[country], marker='o', label=country)
 
-    # Att lägga upp ett schema
-    plt.title('Score Trends Over Years by Country')
-    plt.xlabel('Year')
-    plt.ylabel('Score')
+    plt.title('PISA: 2003-2018')
+    plt.xlabel('År')
+    plt.ylabel('Poäng')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -241,7 +246,7 @@ def battreSamre(pisadata, improving):
         print("{:<20} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format(country, *scores))
 
 
-def Woman_man(data):
+def kvinna_man(data):
     """
     Funktionen analyserar data som jämför resultaten för män och kvinnor över olika år och länder,
      och visar en tabell med data där kvinnor presterade bättre än män.
@@ -306,7 +311,7 @@ nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 
 # Main program loop
 while True:
-    # pisadata = read_file("pisadata.csv")
+    pisadata = read_file("pisadata.csv")
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
@@ -338,7 +343,7 @@ while True:
         if 'pisadata' not in locals():
             print("Du måste välja alternativ 1 först.")
         else:
-            Woman_man(pisadata)
+            kvinna_man(pisadata)
             print()
     elif choice == '6':
         print("Programmet är avslutat.")
