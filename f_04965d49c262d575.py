@@ -113,7 +113,7 @@ def armed(data):
 
 
 def get_data(pisadata, mean, data):
-    mean_indices = [i for i in range(13, 19)]
+    mean_indices = [i for i, column in enumerate(pisadata[1]) if 'medel' in column]
     for i in range(len(mean)):
         year = mean[i][0]  # Extraherar årtalet från titeln
         # Insamling av data för innevarande år
@@ -121,7 +121,7 @@ def get_data(pisadata, mean, data):
 
         for country in nordic_countries:
             index = [i for i, row in enumerate(pisadata) if row[0] == country][0]
-            scandinavian_average = pisadata[index][mean_indices[i - 1]]
+            scandinavian_average = pisadata[index][mean_indices[i]]
             row_data.append(int(scandinavian_average))
 
         row_data.append(mean[i][1])
