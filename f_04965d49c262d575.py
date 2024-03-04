@@ -56,7 +56,7 @@ def sort_results_by_column(data, column_index):
     print(delim)
     print("Land            Resultat")
     print(delim)
-    for country, value in sorted_pairs[-10:]:
+    for country, value in sorted_pairs[28:]:
         print(f"{country:<15} {value}")
 
 
