@@ -305,7 +305,7 @@ nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 
 # Main program loop
 while True:
-    pisadata = read_file("pisadata.csv")
+    # pisadata = read_file("pisadata.csv")
 
     choice = input("Välj ett menyalternativ (1 - 6): ")
     if choice == '1':
