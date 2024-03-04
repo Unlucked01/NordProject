@@ -113,7 +113,7 @@ def armed(data):
 
 
 def get_data(pisadata, mean, data):
-    mean_indices = [i for i, column in enumerate(pisadata[1]) if 'medel' in column]
+    mean_indices = [i for i in range(13, 19)]
     for i in range(len(mean)):
         year = mean[i][0]  # Extraherar årtalet från titeln
         # Insamling av data för innevarande år
