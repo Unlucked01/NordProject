@@ -14,7 +14,7 @@ def read_file(filename):
     list: En lista med innehållet från CSV-filen.
     """
     try:
-        with open(filename, 'r', encoding='UTF-8') as file:
+        with open(filename, 'r', encoding='UTF-8') as file: #
             reader = csv.reader(file, delimiter=';')
             data = [row for row in reader]
         return data
@@ -29,14 +29,13 @@ def sort_results_by_column(data, column_index):
     Funktionen sorterar innehållet i en lista utifrån en vald kolumn och visar de tio bästa och sämsta resultaten år 2018.
 
     Args:
-    data (list): Listan som ska sorteras.
-    column_index (int): Index för den kolumn som bestämmer sorteringsordningen.
-
+    data: En lista med innehållet från CSV-filen.
+    column_index (int): index för den kolumn där vi kommer att söka efter medelvärdet
     Returns:
-    None
+    pisadata_sorterad: lista över par (land, värde) sorterade i fallande ordning
     """
     country_value_pairs = [(data[i + 2][0], int(data[i + 2][column_index])) for i in range(len(data) - 2)]
-    sorted_pairs = sorted(country_value_pairs, key=lambda x: x[1], reverse=True)
+    pisadata_sorterad = sorted(country_value_pairs, key=lambda x: x[1], reverse=True)
 
     # Skriv ut de tio bästa resultaten
     header = "De tio länder som hade bäst resultat år 2018"
@@ -45,7 +44,8 @@ def sort_results_by_column(data, column_index):
     print(delim)
     print("Land            Resultat")
     print(delim)
-    for country, value in sorted_pairs[:10]:
+    # topp 10 länder
+    for country, value in pisadata_sorterad[:10]:
         print(f"{country:<15} {value}")
     print()
 
@@ -56,11 +56,11 @@ def sort_results_by_column(data, column_index):
     print(delim)
     print("Land            Resultat")
     print(delim)
-    for country, value in sorted_pairs[28:]:
+    # de 10 värsta länderna från lägsta poäng till högsta poäng
+    # __reverced__ används för att få en tillfällig inverterad lista
+    for country, value in pisadata_sorterad[-10:].__reversed__():
         print(f"{country:<15} {value}")
-
-    return sorted_pairs
-
+    return pisadata_sorterad
 
 
 def kolumnmedel(data, column_index):
@@ -68,7 +68,7 @@ def kolumnmedel(data, column_index):
     Funktionen beräknar medelvärdet för en kolumn i en lista.
 
      Args:
-     data (lista): Lista över data.
+     data: Lista över data.
      column_index (int): Index för kolumnen för att beräkna medelvärdet.
 
      Returnerar:
@@ -77,8 +77,10 @@ def kolumnmedel(data, column_index):
     total = 0
     count = 0
 
-    for row in data[1:]:
+    for row in data[2:]:
+        # försök att konvertera värdet till int-typ, om detta inte är möjligt, hoppa över det
         try:
+            # sammanfatta alla kolumnvärden
             value = int(row[column_index])
             total += value
             count += 1
@@ -88,6 +90,7 @@ def kolumnmedel(data, column_index):
     if count == 0:
         return 0
     else:
+        # dividera summan med antalet element
         return round(total / count)
 
 
@@ -117,7 +120,7 @@ def get_data(pisadata, medelvAr, data):
     om medelvärdena för varje år och land.
 
     Args:
-    pisadata (lista): PISA-data.
+    pisadata: PISA-data.
     medelvAr (lista): En lista som innehåller data relaterad till år och deras motsvarande medelvärden.
     data (lista): En lista till vilken den samlade datan kommer att läggas till.
 
@@ -132,7 +135,7 @@ def get_data(pisadata, medelvAr, data):
         row_data = [year]
 
         for country in nordic_countries:
-            # поиск индекса скандинавских стран из заданного набора таблицы
+            # Sök efter index för skandinaviska länder från en given tabelluppsättning
             index = [i for i, row in enumerate(pisadata) if row[0] == country][0]
             scandinavian_average = pisadata[index][mean_indices[i]]
             row_data.append(int(scandinavian_average))
@@ -146,7 +149,7 @@ def get_data(pisadata, medelvAr, data):
 # I denna deluppgift skall ni jämföra hur matematikkunskaperna i de nordiska länderna (Sverige,
 # Norge, Danmark, Finland och Island) har utvecklats under åren 2003 – 2018 i jämförelse med
 # medelvärdet per undersökningstillfälle för alla länder som finns i den tidigare inlästa listan pisadata.
-def nordTabell(pisadata, medelvAr, nordic_countries):
+def nordTabell(pisadata, medelvAr):
     """
     Funktionen skapar en tabell och graf som visar medelvärden för de skandinaviska länderna.
 
@@ -164,10 +167,10 @@ def nordTabell(pisadata, medelvAr, nordic_countries):
     header.append("Medelvärde")
     table_data = [header]
 
-    # получение нужных данных в функции для повторного использования
+    # hämta de data som krävs i en funktion för återanvändning
     table_data = get_data(pisadata, medelvAr, table_data)
 
-    # красивый вывод таблицы
+    # vacker bordsutgång
     header = ("{:<5} {:<10} {:<10} {:<10} {:<10} {:<10} {:<7}"
               .format("År", "Sweden", "Norway", "Denmark", "Finland", "Iceland", "Medelvärde"))
     separator = "-" * len(header)
@@ -182,10 +185,8 @@ def nordTabell(pisadata, medelvAr, nordic_countries):
     print(separator)
 
 
-"""
-Функция для отображения графа
-"""
-def nordGraf(pisadata, medelvAr, nordic_countries):
+# Функция для отображения графа
+def nordGraf(pisadata, medelvAr):
     """
     Funktionen skapar ett diagram över poängutvecklingen per år för olika länder.
 
@@ -199,15 +200,15 @@ def nordGraf(pisadata, medelvAr, nordic_countries):
     header.extend(nordic_countries)
     header.append("Medelvärde")
     graph_data = [header]
-    # получение данных для отображения на графике
+    # erhålla data för visning på en graf
     graph_data = get_data(pisadata, medelvAr, graph_data)
 
-    # разделение на заголовки и строчки данных
+    # uppdelning i rubriker och datalinjer
     header = graph_data[0]
     rows = graph_data[1:]
 
-    # инициализация словаря и заполнение его данными
-    # ключ - страна, данные - значения по годам
+    # initialisera ordboken och fylla den med data
+    # nyckel - land, data - värden per år
     data_dict = {header[i]: [] for i in range(len(header))}
     for row in rows:
         for i in range(len(header)):
@@ -215,7 +216,7 @@ def nordGraf(pisadata, medelvAr, nordic_countries):
 
     plt.figure(figsize=(10, 6))
     for country in header[1:]:
-        # создание графика по оси Х - год, по оси Y - значение показателей по каждой стране
+        # skapa en graf på X-axeln - år, på Y-axeln - värdet av indikatorer för varje land
         plt.plot(data_dict["År"], data_dict[country], marker='o', label=country)
 
     plt.title('PISA: 2003-2018')
@@ -228,9 +229,7 @@ def nordGraf(pisadata, medelvAr, nordic_countries):
 
 # Uppgift 4:
 # Denna deluppgift går ut på att presentera trender i data och du skall skapa två tabeller.
-# Den första tabellen ska presentera de länder som kontinuerligt har förbättrat sina resultat mellan år
-# 2003 till 2018. Använd kolumnerna märkta ”medel” i listan pisadata. Tabellen ska ha följande
-# utseende (observera att värdena i tabellen är exempelvärden och inte korrekta värden)
+# Den första tabellen ska presentera de länder som kontinuerligt har förbättrat sina resultat mellan år 2003 till 2018.
 def battreSamre(pisadata, improving):
     """
     Funktionen skapar en graf över betygstrender per år för olika länder.
@@ -242,7 +241,11 @@ def battreSamre(pisadata, improving):
     Ingen
     """
     print()
-    header = "Länder som hela tiden har förbättrat sina resultat mellan 2003 – 2018"
+    if improving:
+        header = "Länder som hela tiden har förbättrat sina resultat mellan 2003 – 2018"
+    else:
+        header = "Länder som konsekvent försämrade sina resultat mellan 2003 - 2018"
+
     delim = "-"*len(header)
     print(header)
     print(delim)
@@ -252,11 +255,11 @@ def battreSamre(pisadata, improving):
 
     tabel_data = []
 
-    # учитываем только данные с третьей строчки
+    # vi beaktar endast uppgifterna från den tredje raden
     for row in pisadata[2:]:
         country = row[0]
-        scores = [int(score) for score in row[-6:]]  # получение всех средних значений, т.к. они последние 6 в строке
-        # если флаг improving истинна, формируем таблицу для возрастающих стран, иначе для убывающих
+        scores = [int(score) for score in row[-6:]]  # får alla medelvärden, eftersom de är de sista 6 i raden
+        # om flaggan förbättra är sann, skapa tabellen för ökande länder, annars för minskande länder
         if improving and all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)):
             tabel_data.append([country] + scores)
         elif not improving and all(scores[i] <= scores[i + 1] for i in range(len(scores) - 1)):
@@ -266,10 +269,8 @@ def battreSamre(pisadata, improving):
         print("{:<20} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format(row[0], *row[1:]))
 
 
-"""
-Uppgift 5:
-Hur har kvinnorna klarat sig i förhållande till männen sett för alla länder, inte bara de nordiska?
-"""
+# Uppgift 5:
+# Hur har kvinnorna klarat sig i förhållande till männen sett för alla länder, inte bara de nordiska?
 def kvinna_man(data):
     """
     Funktionen analyserar data som jämför resultaten för män och kvinnor över olika år och länder,
@@ -291,13 +292,12 @@ def kvinna_man(data):
             year = int(data[0][i])
             score_m = int(row[i])
             score_f = int(row[i+1])
-            if score_f > score_m:  # если счёт женщины > счёта мужчины добавляем в результирующий список
+            if score_f > score_m:  # om kvinnligt konto > manligt konto lägg till i resultatlistan
                 women_better.append((year, country, score_m, score_f))
 
-    yearly_data = {}  # упорядочиваем данные по годам словарём yearly_data, где: ключ - год, значение - страна, счёта мужчин и женщин
+    # organisera uppgifterna efter år med hjälp av ordlistan yearly_data, där: nyckel - år, värde - land, antal män och kvinnor
+    yearly_data = {2018: [], 2015: [], 2012: [], 2009: [], 2006: [], 2003: []}
     for year, country, score_f, score_m in women_better:
-        if year not in yearly_data:  # если года еще нет в словаре, то добавляем с пустым значением
-            yearly_data[year] = []
         yearly_data[year].append((country, score_f, score_m))
 
     # Skriv ut tabellen
@@ -308,12 +308,10 @@ def kvinna_man(data):
     print(separator)
 
     for k in yearly_data.keys():
-        # Итерируемся по ключам годов в словаре yearly_data
+        # Iterera med årtalsnycklar i ordlistan yearly_data
         for i, (country, score_f, score_m) in enumerate(yearly_data[k]):
-            # Итерируемся по индексам и кортежам (страна, среднее_значение_женщины, среднее_значение_мужчины)
-            # в списке, который ассоциирован с текущим годом k в yearly_data
-            if i == 0:  # печатаем год в первой строчке, иначе печатаем строку без года
-                print(f"{k:<5}\t{country:<20} {score_f:<7} {score_m:<7}")
+            if i == 0:  # Skriv ut årtalet på första raden, annars skrivs raden utan årtal ut
+                print(f"\n{k:<5}\t{country:<20} {score_f:<7} {score_m:<7}")
             else:
                 print(f"\t{country:<20} {score_f:<7} {score_m:<7}")
 
@@ -332,7 +330,6 @@ Program för att läsa in och analysera data från PISA-undersökningen
 print(menu)
 nordic_countries = ['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland']
 
-# Main program loop
 while True:
     # pisadata = read_file("pisadata.csv")
 
@@ -353,8 +350,8 @@ while True:
             print("Du måste välja alternativ 1 först.")
         else:
             medelvAr = arsmedel(pisadata)
-            nordTabell(pisadata, medelvAr, nordic_countries)
-            nordGraf(pisadata, medelvAr, nordic_countries)
+            nordTabell(pisadata, medelvAr)
+            nordGraf(pisadata, medelvAr)
     elif choice == '4':
         if 'pisadata' not in locals():
             print("Du måste välja alternativ 1 först.")
